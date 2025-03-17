@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "ts-node-dev --transpile-only src/server.ts",
-    "start": "node index.js"
+    "build": "tsc",
+    "start": "node build/src/server.js"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
