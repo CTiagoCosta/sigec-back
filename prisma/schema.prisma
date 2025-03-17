@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+//Criar uma migration: yarn prisma migrate dev
+model Patients {
+  id_patients String   @id @default(uuid())
+  full_name String 
+  cpf       String
+  password  String
+  birth_date String 
+  phone       String
+  email  String
+  address       String
+  insurance  String?
+  medical_history String?
+  allergies       String?
+  medications  String?
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("patients")
+  appointments Appointment[]
+  psychological_records PsychologicalRecord[]
+}
+
+model Professional{
+  id_professionals String   @id @default(uuid())
+  full_name String 
+  cpf       String
+  password  String
+  role String 
+  phone       String
+  email  String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("professionals")
+  psychological_records PsychologicalRecord[]
+  appointments Appointment[]
+}
+
+model PsychologicalRecord {
+  id_psychological_records String   @id @default(uuid())
+  date_consultation DateTime
+  notes String
+  diagnosis String
+  treatment String
+  progress String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  patient Patients @relation(fields: [patients_id], references: [id_patients])
+  professional Professional @relation(fields: [professionals_id], references: [id_professionals])
+
+
+  @@map("psychological_records")
+  professionals_id String
+  patients_id String
+}
+
+model Appointment {
+  id_appointments String   @id @default(uuid())
+  appointment_type DateTime
+  date_appointment DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  
+  patient Patients @relation(fields: [patients_id], references: [id_patients])
+  professional Professional @relation(fields: [professionals_id], references: [id_professionals])
+
+  @@map("appointments")
+  notification Notification[]
+
+  patients_id String
+  professionals_id String
+
+}
+
+model Notification {
+  id_notifications String   @id @default(uuid())
+  notification_type String
+  sent_date_time String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  appointments Appointment @relation(fields: [appointments_id], references: [id_appointments])
+
+  @@map("notifications")
+  appointments_id String
+
+}
